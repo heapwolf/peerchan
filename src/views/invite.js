@@ -27,6 +27,7 @@ export default class WindowInvite {
     const winInvitesCopyButton = blessed.button({
       parent: this.win,
       mouse: true,
+      keys: true,
       right: 10,
       bottom: 0,
       height: 1,
@@ -46,7 +47,10 @@ export default class WindowInvite {
         request58: id
       } = currentInvite
 
-      clipboardy.writeSync(`/a ${name} ${id}`)
+      const s = `/a ${name} ${id}`
+      clipboardy.writeSync(s)
+      this.win.close()
+      this.screen.render()
     })
 
     const winInvitesCloseButton = blessed.button({

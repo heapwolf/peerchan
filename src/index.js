@@ -8,7 +8,7 @@ import blessed from 'neo-blessed'
 import Network from './network.js'
 import log from './log.js'
 import ui from './ui.js'
-import Storage from '@peerlinks/sqlite-storage'
+import Storage from '@peerlinks/level-storage'
 
 //
 // Create the network
@@ -19,7 +19,6 @@ if (!fs.existsSync(USER_DATA_DIR)) {
   fs.mkdirSync(USER_DATA_DIR)
 }
 
-const DB_FILE = path.join(USER_DATA_DIR, 'pl-db-v2.sqlite')
 const ee = new EventEmitter()
 
 //
@@ -29,29 +28,23 @@ const screen = blessed.screen({
   smartCSR: true
 })
 
-screen.title = 'Peerchan'
-
-ui(screen, ee)
-log(ee)
-
 //
 // Startup
 //
 export default async function main () {
   const instance = process.env.INST || 0
 
+  ui(screen, ee)
+  log(ee)
+
   log.info('Storage initializing...')
-  const storage = new Storage({
-    file: `chat-instance${instance}.sqlite`,
-    trace: !!process.env.PEERLINKS_TRACE_DB
-  })
+  const storage = new Storage()
 
   log.info('Storage opening...')
-  await storage.open()
+  await storage.open(`./data-${instance}`)
   log.info('Storage opened')
 
   const network = new Network(ee, {
-    db: DB_FILE,
     storage,
     log
   })

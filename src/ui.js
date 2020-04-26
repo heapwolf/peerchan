@@ -109,11 +109,11 @@ const ui = (screen, events) => {
   const windowLogs = new WindowLogs(screen, events)
   if (!windowLogs) throw new Error('ENOLOGSWIN')
 
-  const windowIdentity = new WindowIdentity(screen, events)
-  if (!windowIdentity) throw new Error('ENOIDSWIN')
+  // const windowIdentity = new WindowIdentity(screen, events)
+  // if (!windowIdentity) throw new Error('ENOIDSWIN')
 
-  const windowChannels = new WindowChannels(screen, events)
-  if (!windowChannels) throw new Error('ENOCHWIN')
+  // const windowChannels = new WindowChannels(screen, events)
+  // if (!windowChannels) throw new Error('ENOCHWIN')
 
   events.on('messages', (data) => {
     const w = winMessages

@@ -82,7 +82,6 @@ export default class WindowIdentity {
       events.emit('network', 'iam', {
         name: this.winIdCreateInput.getValue().trim()
       })
-      // this.events.emit('input:focus')
     }
 
     this.winIdCreateInput.key('enter', onAfterWinIdCreate)
@@ -117,7 +116,6 @@ export default class WindowIdentity {
       }
 
       this.events.emit('network', 'iam', { name })
-      // this.events.emit('input:focus')
     })
 
     this.screen.render()

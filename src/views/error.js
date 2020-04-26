@@ -71,6 +71,8 @@ export default class WindowError {
       })
     }
 
+    events.on('error', errHandle)
+
     process.on('uncaughtException', errHandle)
     process.on('unhandledRejection', errHandle)
   }

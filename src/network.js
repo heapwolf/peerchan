@@ -66,7 +66,7 @@ class Network {
       return this.log.warn('identity not set')
     }
 
-    this.log.info(`truing to accept invite, ${inviteeName}, ${request}`)
+    this.log.info(`trying to accept invite, ${inviteeName}, ${request}`)
     request = bs58.decode(request)
 
     const {
@@ -145,9 +145,9 @@ class Network {
     }
 
     const channel = this.protocol.getChannel(name)
+
     if (!channel) {
-      throw new Error(`Unknown channel: "${name}". ` +
-        'Use `requestInvite()` to join')
+      return this.events.emit('error', { message: `Unknown channel, '${name}'. Request an invite?` })
     }
 
     const loop = async () => {
