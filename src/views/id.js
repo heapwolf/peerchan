@@ -1,6 +1,6 @@
-import blessed from 'neo-blessed'
+const blessed = require('neo-blessed')
 
-export default class WindowIdentity {
+module.exports = class WindowIdentity {
   constructor (screen, events) {
     this.screen = screen
     this.events = events

@@ -1,10 +1,10 @@
-import blessed from 'neo-blessed'
-import WindowHelp from './views/help.js'
-import WindowError from './views/error.js'
-import WindowInvite from './views/invite.js'
-import WindowLogs from './views/logs.js'
-import WindowIdentity from './views/id.js'
-import WindowChannels from './views/ch.js'
+const blessed = require('neo-blessed')
+const WindowHelp = require('./views/help')
+const WindowError = require('./views/error')
+const WindowInvite = require('./views/invite')
+const WindowLogs = require('./views/logs')
+const WindowIdentity = require('./views/id')
+const WindowChannels = require('./views/ch')
 
 function rgbToHex (...args) {
   const toHex = c => {
@@ -47,7 +47,7 @@ function fmtMessage (data, channel) {
   return `${time} [${author || 'me'}]: ${text}`
 }
 
-const ui = (screen, events) => {
+module.exports = (screen, events) => {
   //
   // MESSAGES
   //
@@ -201,5 +201,3 @@ const ui = (screen, events) => {
 
   screen.render()
 }
-
-export default ui

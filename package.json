@@ -2,18 +2,17 @@
   "name": "peerchan",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "type": "module",
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@hyperswarm/network": "^1.5.0",
     "@peerlinks/level-storage": "github:heapwolf/peerlinks-level-storage",
     "@peerlinks/protocol": "github:heapwolf/peerlinks",
-    "@peerlinks/swarm": "^3.0.6",
+    "@peerlinks/swarm": "github:heapwolf/peerlinks-swarm",
     "bs58": "^4.0.1",
     "clipboardy": "^2.3.0",
     "neo-blessed": "^0.2.0",

@@ -1,6 +1,6 @@
-import blessed from 'neo-blessed'
+const blessed = require('neo-blessed')
 
-export default class WindowLogs {
+module.exports = class WindowLogs {
   constructor (screen, events) {
     this.screen = screen
     this.events = events

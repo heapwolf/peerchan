@@ -1,14 +1,14 @@
-import os from 'os'
-import fs from 'fs'
-import path from 'path'
-import { EventEmitter } from 'events'
+const os = require('os')
+const fs = require('fs')
+const path = require('path')
+const { EventEmitter } = require('events')
 
-import blessed from 'neo-blessed'
+const blessed = require('neo-blessed')
 
-import Network from './network.js'
-import log from './log.js'
-import ui from './ui.js'
-import Storage from '@peerlinks/level-storage'
+const Network = require('./network')
+const log = require('./log')
+const ui = require('./ui')
+const Storage = require('@peerlinks/level-storage')
 
 //
 // Create the network
@@ -31,7 +31,7 @@ const screen = blessed.screen({
 //
 // Startup
 //
-export default async function main () {
+module.exports = async function main () {
   const instance = process.env.INST || 0
 
   ui(screen, ee)
@@ -41,7 +41,7 @@ export default async function main () {
   const storage = new Storage()
 
   log.info('Storage opening...')
-  await storage.open(`./data-${instance}`)
+  await storage.open(`./data-${instance}.level`)
   log.info('Storage opened')
 
   const network = new Network(ee, {

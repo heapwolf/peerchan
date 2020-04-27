@@ -1,13 +1,12 @@
-import sodium from 'sodium-universal'
-import * as _bs58 from 'bs58'
-import Protocol, { Message } from '@peerlinks/protocol'
-import Swarm from '@peerlinks/swarm'
+const sodium = require('sodium-universal')
+const bs58 = require('bs58')
+const { Protocol, Message } = require('@peerlinks/protocol')
+const Swarm = require('@peerlinks/swarm')
 
-const bs58 = _bs58.default
 const DISPLAY_COUNT = 30
 const INVITE_TIMEOUT = 15 * 60 * 1000 // 15 minutes
 
-class Network {
+module.exports = class Network {
   constructor (ee, options = {}) {
     this.options = options
     this.storage = options.storage
@@ -101,12 +100,16 @@ class Network {
       request58
     })
 
+    this.log.info(`Wait for invite (trusteeName=${trusteeName}, request58=${request58})`)
+
     const encryptedInvite =
       await this.swarm.waitForInvite(requestId, INVITE_TIMEOUT)
     const invite = decrypt(encryptedInvite)
 
     const channel =
       await this.protocol.channelFromInvite(invite, this.identity)
+
+    this.log.info(`Starting to sync (channel=${channel.name})`)
 
     // Join channel's swarm to start synchronization
     await this.ch({ name: channel.name })
@@ -193,5 +196,3 @@ class Network {
     })
   }
 }
-
-export default Network

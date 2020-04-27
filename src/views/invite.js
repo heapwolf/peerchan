@@ -1,7 +1,7 @@
-import blessed from 'neo-blessed'
-import clipboardy from 'clipboardy'
+const blessed = require('neo-blessed')
+const clipboardy = require('clipboardy')
 
-export default class WindowInvite {
+module.exports = class WindowInvite {
   constructor (screen, events) {
     this.screen = screen
     this.events = events
@@ -36,7 +36,8 @@ export default class WindowInvite {
         fg: 'white',
         bg: 'black'
       },
-      content: ' COPY '
+      content: ' COPY ',
+      index: 100
     })
 
     let currentInvite
