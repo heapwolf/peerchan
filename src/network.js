@@ -3,7 +3,7 @@ const bs58 = require('bs58')
 const { Protocol, Message } = require('@peerlinks/protocol')
 const Swarm = require('@peerlinks/swarm')
 
-const DISPLAY_COUNT = 30
+const DISPLAY_COUNT = 5000
 const INVITE_TIMEOUT = 15 * 60 * 1000 // 15 minutes
 
 module.exports = class Network {
@@ -83,7 +83,7 @@ module.exports = class Network {
 
   async request () {
     if (!this.identity) {
-      return this.log.error({ message: 'iam() must be called first' })
+      return this.log.error({ message: 'Must identity first' })
     }
 
     const {
@@ -99,8 +99,6 @@ module.exports = class Network {
       trusteeName,
       request58
     })
-
-    this.log.info(`Wait for invite (trusteeName=${trusteeName}, request58=${request58})`)
 
     const encryptedInvite =
       await this.swarm.waitForInvite(requestId, INVITE_TIMEOUT)
@@ -123,22 +121,22 @@ module.exports = class Network {
 
   async post ({ text }) {
     if (!this.identity) {
-      return this.events.emit('error', { message: '`iam()` must be called first' })
+      return this.log.error('Must identify first')
     }
 
     const body = Message.json({ text })
     await this.channel.post(body, this.identity)
     await this.displayChannel()
-
-    return this.log.info('Successfully posted message')
+    return true
   }
 
   channels () {
     this.events.emit('network:channels', this.protocol.getChannelNames())
   }
 
-  identities () {
-    this.events.emit('network:identities', this.protocol.getIdentityNames())
+  async identities () {
+    const ids = await this.protocol.getIdentityNames().map(id => String(id))
+    this.events.emit('network:identities', ids)
   }
 
   async ch ({ name }) {
@@ -188,6 +186,8 @@ module.exports = class Network {
   async displayChannel () {
     const ch = this.channel
     const messages = await ch.getReverseMessagesAtOffset(0, DISPLAY_COUNT)
+
+    this.log.info(`displaying ${messages.length} messages`)
 
     this.events.emit('messages', {
       channel: this.channel,
