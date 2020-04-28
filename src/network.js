@@ -35,7 +35,7 @@ module.exports = class Network {
     await this.protocol.load()
 
     this.swarm = new Swarm(this.protocol)
-    this.log.info('Initialized swarm')
+    this.log.info('Initialized Hyperswarm')
   }
 
   async iam ({ name = this.randomName }) {
@@ -57,6 +57,7 @@ module.exports = class Network {
       ? `Using identity: "${name}"`
       : `Created identity: "${name}"`
 
+    this.events.emit('network:identified')
     this.log.info(message)
   }
 
@@ -83,7 +84,7 @@ module.exports = class Network {
 
   async request () {
     if (!this.identity) {
-      return this.log.error({ message: 'Must identity first' })
+      return
     }
 
     const {
@@ -99,6 +100,8 @@ module.exports = class Network {
       trusteeName,
       request58
     })
+
+    this.log.info('Waiting for invite to be accepted')
 
     const encryptedInvite =
       await this.swarm.waitForInvite(requestId, INVITE_TIMEOUT)
@@ -121,7 +124,7 @@ module.exports = class Network {
 
   async post ({ text }) {
     if (!this.identity) {
-      return this.log.error('Must identify first')
+      return
     }
 
     const body = Message.json({ text })
@@ -186,8 +189,6 @@ module.exports = class Network {
   async displayChannel () {
     const ch = this.channel
     const messages = await ch.getReverseMessagesAtOffset(0, DISPLAY_COUNT)
-
-    this.log.info(`displaying ${messages.length} messages`)
 
     this.events.emit('messages', {
       channel: this.channel,

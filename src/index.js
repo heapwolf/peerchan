@@ -40,6 +40,8 @@ module.exports = async function main () {
     log
   })
 
+  log.info('Storage initialized')
+
   ee.on('quit', async () => {
     log.info('Quitting...')
     await storage.close()
@@ -55,5 +57,5 @@ module.exports = async function main () {
   }
 
   ee.emit('network', 'identities')
-  log.info('Network initialized...')
+  log.info('Network initialized')
 }
