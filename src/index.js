@@ -25,22 +25,17 @@ const ee = new EventEmitter()
 module.exports = async function main () {
   const instance = process.env.INST || 0
 
-  ui(ee)
   log(ee)
+  ui(ee)
 
-  log.info('Storage initializing...')
   const storage = new Storage()
 
-  log.info('Storage opening...')
   await storage.open(`./data-${instance}.level`)
-  log.info('Storage opened')
 
   const network = new Network(ee, {
     storage,
     log
   })
-
-  log.info('Storage initialized')
 
   ee.on('quit', async () => {
     log.info('Quitting...')
@@ -49,13 +44,11 @@ module.exports = async function main () {
   })
 
   try {
-    log.info('Network initializing...')
     await network.init()
   } catch (err) {
     log.error(err.stack)
     process.exit(1)
   }
 
-  ee.emit('network', 'identities')
-  log.info('Network initialized')
+  ee.emit('network:initialized')
 }

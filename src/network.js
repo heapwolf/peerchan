@@ -1,9 +1,25 @@
+const os = require('os')
+const path = require('path')
 const sodium = require('sodium-universal')
 const bs58 = require('bs58')
-const { Protocol, Message } = require('@peerlinks/protocol')
 const Swarm = require('@peerlinks/swarm')
 
-const DISPLAY_COUNT = 5000
+const {
+  Protocol,
+  Channel,
+  Identity,
+  Message
+} = require('@peerlinks/protocol')
+
+let config = {
+  bufferSize: 5000
+}
+
+try {
+  config = require(path.join(os.homedir(), '.peerchan'))
+} catch (err) {
+}
+
 const INVITE_TIMEOUT = 15 * 60 * 1000 // 15 minutes
 
 module.exports = class Network {
@@ -61,6 +77,47 @@ module.exports = class Network {
     this.log.info(message)
   }
 
+  async status () {
+    const status = {
+      name: this.channel.name,
+      count: await this.channel.getMessageCount(),
+      meta: JSON.stringify(this.channel.metadata),
+      paths: {}
+    }
+
+    this.events.emit('network:status', status)
+  }
+
+  async create ({ name }) {
+    if (!this.identity) {
+      return this.log.warn('identity not set')
+    }
+
+    const existing = this.protocol.getChannel(name)
+    if (existing) {
+      return this.log.warn('Channel already exists')
+    }
+
+    const identity = new Identity(name, { sodium })
+    const channel = await Channel.fromIdentity(identity, { name, sodium })
+
+    await this.protocol.addChannel(channel)
+
+    const {
+      request,
+      decrypt
+    } = this.identity.requestInvite(this.protocol.id)
+
+    const {
+      encryptedInvite
+    } = identity.issueInvite(channel, request, this.identity.name)
+
+    const invite = decrypt(encryptedInvite)
+
+    await this.protocol.channelFromInvite(invite, this.identity)
+    this.log.info(`Created channel ${name}`)
+  }
+
   async accept ({ inviteeName, request }) {
     if (!this.identity) {
       return this.log.warn('identity not set')
@@ -79,7 +136,7 @@ module.exports = class Network {
       encryptedInvite
     }, INVITE_TIMEOUT)
 
-    return this.log.info('issued invite')
+    this.log.info('issued invite')
   }
 
   async request () {
@@ -115,11 +172,13 @@ module.exports = class Network {
     // Join channel's swarm to start synchronization
     await this.ch({ name: channel.name })
 
-    return this.events.emit('data', {
+    this.events.emit('data', {
       joined: true,
       name: this.channel.name,
       message: `Joined ${this.channel.name}`
     })
+
+    this.log.info('Created request')
   }
 
   async post ({ text }) {
@@ -151,18 +210,20 @@ module.exports = class Network {
     const channel = this.protocol.getChannel(name)
 
     if (!channel) {
-      return this.events.emit('error', { message: `Unknown channel, '${name}'. Request an invite?` })
+      return this.log.error(`Unknown channel, '${name}'. Request an invite?`)
     }
 
     const loop = async () => {
       this.channelWait = channel.waitForIncomingMessage()
+      const t = new Date()
+
+      this.events.emit('network:join', {
+        name: `${channel.name} ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}`
+      })
 
       try {
         await this.channelWait
         this.channelWait = null
-
-        // Bell sound
-        process.stdout.write('\u0007')
 
         try {
           this.displayChannel()
@@ -183,12 +244,14 @@ module.exports = class Network {
 
     await this.displayChannel()
 
+    this.log.info(`Joined channel ${name}`)
+
     return { data: { joined: true } }
   }
 
   async displayChannel () {
     const ch = this.channel
-    const messages = await ch.getReverseMessagesAtOffset(0, DISPLAY_COUNT)
+    const messages = await ch.getReverseMessagesAtOffset(0, config.bufferSize)
 
     this.events.emit('messages', {
       channel: this.channel,

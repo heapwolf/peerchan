@@ -15,6 +15,7 @@
     "@peerlinks/swarm": "github:heapwolf/peerlinks-swarm",
     "bs58": "^4.0.1",
     "charm": "^1.0.2",
+    "clipboardy": "^2.3.0",
     "promise-waitlist": "^1.5.0",
     "sodium-native": "^3.0.1",
     "sodium-universal": "^2.0.0"
