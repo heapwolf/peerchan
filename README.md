@@ -1,6 +1,8 @@
 # SYNOPSIS
 A terminal based client for the peerlinks protocol.
 
+![screenshot](screenshot.png)
+
 - Fully peer to peer
 - Multiline input editing
 - Command autocomplete
