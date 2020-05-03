@@ -5,6 +5,7 @@ const Swarm = require('@peerlinks/swarm')
 const {
   Protocol,
   Channel,
+  Chain,
   Identity,
   Message
 } = require('@peerlinks/protocol')
@@ -111,10 +112,11 @@ module.exports = class Network {
     }
 
     const identity = new Identity(name, { sodium })
-    const channel = await Channel.fromIdentity(identity, { name, sodium })
-
-    this.protocol.addIdentity(identity)
-    this.protocol.addChannel(channel)
+    const channel = await Channel.fromIdentity(identity, {
+      name,
+      sodium,
+      storage: this.storage
+    })
 
     const {
       request,
@@ -126,10 +128,13 @@ module.exports = class Network {
     } = identity.issueInvite(channel, request, this.identity.name)
 
     const invite = decrypt(encryptedInvite)
+    const chain = Chain.deserialize(invite.chain, { sodium })
 
-    await this.protocol.channelFromInvite(invite, this.identity)
+    await this.identity.addChain(channel, chain)
+    await this.protocol.addChannel(channel)
+    await this.protocol.addIdentity(identity)
 
-    await this.ch({ name: channel.name })
+    await this.ch({ name })
   }
 
   async accept ({ inviteeName, request }) {
@@ -255,9 +260,9 @@ module.exports = class Network {
 
     loop()
 
-    await this.displayChannel()
-
     this.log.info(`Joined channel ${name}`)
+
+    await this.displayChannel()
 
     return { data: { joined: true } }
   }
