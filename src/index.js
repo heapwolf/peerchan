@@ -1,6 +1,8 @@
+const debug = require('debug')
 const os = require('os')
 const fs = require('fs')
 const path = require('path')
+const util = require('util')
 const { EventEmitter } = require('events')
 
 const Network = require('./network')
@@ -18,6 +20,15 @@ if (!fs.existsSync(USER_DATA_DIR)) {
 }
 
 const ee = new EventEmitter()
+
+if (process.env.DEBUG) {
+  const logfd = fs.openSync('peerchan.log', 'a+')
+
+  debug.log = (...args) => {
+    const s = util.format(...args)
+    fs.write(logfd, s + '\n', () => {})
+  }
+}
 
 //
 // Startup

@@ -35,3 +35,16 @@ Optional config stored in `~/.peerchan.json`.
   "id": "heapwolf"
 }
 ```
+
+# DEBUG
+In terminal window A...
+
+```sh
+DEBUG_COLORS=false DEBUG='peerlinks:*' node ./bin/peerchan.js
+```
+
+In terminal window B...
+
+```sh
+tail -f ./peerchan.log
+```
