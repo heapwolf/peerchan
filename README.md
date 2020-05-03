@@ -11,6 +11,12 @@ A terminal based client for the peerlinks protocol.
 - Create channels
 - Request and accept invites
 
+# INSTALL
+
+```sh
+npm install peerchan -g
+```
+
 # CONFIG
 Optional example config stored in `~/.peerchan.json`.
 

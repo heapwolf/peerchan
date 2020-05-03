@@ -1,12 +1,12 @@
 {
   "name": "peerchan",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Fully decentralized p2p IRC for your terminal",
   "main": "src/index.js",
   "scripts": {
-    "start": "node bin/peerchan.js"
+    "start": "node ./bin/peerchan.js"
   },
-  "author": "",
+  "author": "heapwolf",
   "license": "ISC",
   "dependencies": {
     "@hyperswarm/network": "^1.5.0",
@@ -21,7 +21,7 @@
     "sodium-universal": "^2.0.0"
   },
   "bin": {
-    "peerchan": "peerchan.js"
+    "peerchan": "bin/peerchan.js"
   },
   "devDependencies": {},
   "repository": {
