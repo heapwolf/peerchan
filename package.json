@@ -1,7 +1,7 @@
 {
   "name": "peerchan",
-  "version": "1.0.1",
-  "description": "",
+  "version": "1.0.2",
+  "description": "Fully decentralized p2p IRC for your terminal",
   "main": "src/index.js",
   "scripts": {
     "start": "node bin/peerchan.js"
@@ -19,5 +19,17 @@
     "promise-waitlist": "^1.5.0",
     "sodium-native": "^3.0.1",
     "sodium-universal": "^2.0.0"
-  }
+  },
+  "bin": {
+    "peerchan": "peerchan.js"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heapwolf/peerchan.git"
+  },
+  "bugs": {
+    "url": "https://github.com/heapwolf/peerchan/issues"
+  },
+  "homepage": "https://github.com/heapwolf/peerchan#readme"
 }
