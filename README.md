@@ -40,10 +40,15 @@ Optional config stored in `~/.peerchan.json`.
 In terminal window A...
 
 ```sh
-DEBUG_COLORS=false DEBUG='peerlinks:*' node ./bin/peerchan.js
+DEBUG_COLORS=false DEBUG='peerlinks:*' INST=0 node ./bin/peerchan.js
 ```
 
-In terminal window B...
+In terminal widow B...
+```sh
+DEBUG_COLORS=false DEBUG='peerlinks:*' INST=1 node ./bin/peerchan.js
+```
+
+In terminal window C...
 
 ```sh
 tail -f ./peerchan.log
