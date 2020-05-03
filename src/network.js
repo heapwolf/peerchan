@@ -1,5 +1,3 @@
-const os = require('os')
-const path = require('path')
 const sodium = require('sodium-universal')
 const bs58 = require('bs58')
 const Swarm = require('@peerlinks/swarm')
@@ -11,13 +9,8 @@ const {
   Message
 } = require('@peerlinks/protocol')
 
-let config = {
+const config = {
   bufferSize: 5000
-}
-
-try {
-  config = require(path.join(os.homedir(), '.peerchan'))
-} catch (err) {
 }
 
 const INVITE_TIMEOUT = 15 * 60 * 1000 // 15 minutes
@@ -78,11 +71,30 @@ module.exports = class Network {
   }
 
   async status () {
+    if (!this.identity) {
+      return this.log.warn('identity not set')
+    }
+
+    const chainMap = this.protocol.computeChainMap()
+    const peers = []
+
+    for (const [, chains] of chainMap) {
+      chains.forEach((chain) => {
+        const path = chain.getDisplayPath()
+        if (path.length) peers.push(path)
+      })
+    }
+
+    if (!peers.length) {
+      peers.push(this.channel.name)
+    }
+
     const status = {
-      name: this.channel.name,
-      count: await this.channel.getMessageCount(),
+      channelName: this.channel.name || this.identity.name,
+      messageCount: await this.channel.getMessageCount(),
+      peerCount: chainMap.size || 0,
       meta: JSON.stringify(this.channel.metadata),
-      paths: {}
+      peers
     }
 
     this.events.emit('network:status', status)
@@ -101,7 +113,8 @@ module.exports = class Network {
     const identity = new Identity(name, { sodium })
     const channel = await Channel.fromIdentity(identity, { name, sodium })
 
-    await this.protocol.addChannel(channel)
+    this.protocol.addIdentity(identity)
+    this.protocol.addChannel(channel)
 
     const {
       request,
@@ -115,7 +128,8 @@ module.exports = class Network {
     const invite = decrypt(encryptedInvite)
 
     await this.protocol.channelFromInvite(invite, this.identity)
-    this.log.info(`Created channel ${name}`)
+
+    await this.ch({ name: channel.name })
   }
 
   async accept ({ inviteeName, request }) {
@@ -215,10 +229,9 @@ module.exports = class Network {
 
     const loop = async () => {
       this.channelWait = channel.waitForIncomingMessage()
-      const t = new Date()
 
       this.events.emit('network:join', {
-        name: `${channel.name} ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}`
+        name: channel.name
       })
 
       try {
@@ -251,7 +264,9 @@ module.exports = class Network {
 
   async displayChannel () {
     const ch = this.channel
-    const messages = await ch.getReverseMessagesAtOffset(0, config.bufferSize)
+    const count = await ch.getMessageCount()
+    const min = Math.min(config.bufferSize, count)
+    const messages = await ch.getReverseMessagesAtOffset(0, min)
 
     this.events.emit('messages', {
       channel: this.channel,

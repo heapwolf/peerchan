@@ -136,11 +136,14 @@ const paintRows = () => {
     screen.position(0, i)
 
     if (i === 1) {
+      const cols = process.stdout.columns
+
       screen.background(config.status.bg)
       screen.foreground(config.status.fg)
-      screen.write(' '.repeat(process.stdout.columns))
+      screen.write(' '.repeat(cols))
       screen.position(0, 0)
-      screen.write(status)
+      const padding = ' '.repeat((cols / 2) - (status.length / 2))
+      screen.write(padding + status)
       screen.background(config.bg)
       screen.foreground(config.fg)
       return
@@ -173,7 +176,7 @@ const paintRows = () => {
     } else {
       let text
       if (line.value.isRoot) {
-        text = '<channel created>'
+        text = 'channel created'
       } else {
         text = line.value.json.text
       }
@@ -338,8 +341,24 @@ module.exports = (events) => {
     ready()
   })
 
-  events.on('network:status', (s) => {
-    write({ txt: JSON.stringify(s) })
+  events.on('network:status', status => {
+    if (!status.channelName) return
+
+    write({ txt: '' })
+    write({ txt: 'CHANNEL' })
+    write({ txt: '' })
+    write({ txt: `Channel: ${status.channelName}` })
+    write({ txt: `Messages: ${status.messageCount}` })
+    write({ txt: `Users: ${status.peerCount}` })
+    write({ txt: '' })
+    write({ txt: 'USERS' })
+    write({ txt: '' })
+
+    for (const user of status.peers) {
+      write({ txt: `${user}` })
+    }
+
+    write({ txt: '' })
     ready()
   })
 
@@ -378,7 +397,6 @@ module.exports = (events) => {
         case 'create': {
           const name = parts[1]
           if (!name) break
-          write({ txt: `Create channel ${name}` })
           events.emit('network', 'create', { name })
           break
         }

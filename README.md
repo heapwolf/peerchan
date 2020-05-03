@@ -1,7 +1,7 @@
 # SYNOPSIS
 A terminal based client for the peerlinks protocol.
 
-- Fully Peer to peer
+- Fully peer to peer
 - Multiline input editing
 - Command autocomplete
 - Customizable color scheme
@@ -36,7 +36,10 @@ Optional config stored in `~/.peerchan.json`.
 }
 ```
 
-# DEBUG
+# DEBUGGING
+This has been tested on node `12.16.3 LTS`, but latest, `14.1.0` seems
+to have some issues.
+
 In terminal window A...
 
 ```sh
