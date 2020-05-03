@@ -20,27 +20,29 @@ npm install peerchan -g
 # CONFIG
 Optional example config stored in `~/.peerchan.json`.
 
-```
+```js
 {
   "bg": 255,
   "fg": 234,
-  "comment": {
+  "comment": { // system comments
     "fg": 246,
     "bg": 255
   },
-  "prompt": {
+  "prompt": { // the text message input
     "bg": 4,
     "fg": 15
   },
-  "timestamp": {
+  "timestamp": { // message timestamp
     "fg": 244,
     "bg": 255
   },
-  "status": {
+  "status": { // the status bar at the top
     "fg": 4,
     "bg": 15
   },
-  "id": "heapwolf"
+  "prefix": "▌", // prefix system comments
+  "scrollback": 3, // scrollback rate
+  "id": "heapwolf" // your default id
 }
 ```
 

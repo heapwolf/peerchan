@@ -164,7 +164,7 @@ const paintRows = () => {
     if (line.type !== 'message') {
       screen.background(config.comment.bg)
       screen.foreground(config.comment.fg)
-      screen.write('# ')
+      screen.write(config.prefix || '▍')
       screen.foreground(line.status === 'OK' ? 2 : 1)
       screen.write(line.status ? line.status + ' ' : '')
       screen.background(config.comment.bg)

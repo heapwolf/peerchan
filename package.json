@@ -1,6 +1,6 @@
 {
   "name": "peerchan",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Fully decentralized p2p IRC for your terminal",
   "main": "src/index.js",
   "scripts": {
