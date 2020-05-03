@@ -12,7 +12,7 @@ A terminal based client for the peerlinks protocol.
 - Request and accept invites
 
 # CONFIG
-Optional config stored in `~/.peerchan.json`.
+Optional example config stored in `~/.peerchan.json`.
 
 ```
 {

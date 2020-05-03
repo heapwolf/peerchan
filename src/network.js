@@ -93,7 +93,7 @@ module.exports = class Network {
     const status = {
       channelName: this.channel.name || this.identity.name,
       messageCount: await this.channel.getMessageCount(),
-      peerCount: chainMap.size || 0,
+      peerCount: chainMap.size || 1,
       meta: JSON.stringify(this.channel.metadata),
       peers
     }
