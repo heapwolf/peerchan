@@ -41,7 +41,7 @@ module.exports = async function main () {
 
   const storage = new Storage()
 
-  await storage.open(`./data-${instance}.level`)
+  await storage.open(`${USER_DATA_DIR}/data-${instance}.level`)
 
   const network = new Network(ee, {
     storage,

@@ -278,7 +278,6 @@ module.exports = (events) => {
         ...JSON.parse(str)
       }
     } catch (err) {
-      events.emit('log', { status: 'NOT OK', txt: err.message })
     }
 
     events.emit('log', { status: 'OK', txt: 'Loaded config' })
