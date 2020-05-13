@@ -128,12 +128,8 @@ module.exports = class Network {
     } = identity.issueInvite(channel, request, this.identity.name)
 
     const invite = decrypt(encryptedInvite)
-    const chain = Chain.deserialize(invite.chain, { sodium })
 
-    await this.identity.addChain(channel, chain)
-    await this.protocol.addChannel(channel)
-    await this.protocol.addIdentity(identity)
-
+    await this.protocol.channelFromInvite(invite, this.identity)
     await this.ch({ name })
   }
 
