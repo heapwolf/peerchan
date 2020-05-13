@@ -35,6 +35,7 @@ let config = {
 }
 
 const colorKeys = {}
+let colorIndex = 3
 let paintCursorOffset = 0
 let readyBounce = null
 let status = ''
@@ -60,20 +61,6 @@ const write = (o) => {
   if (buffer.length === config.bufferSize) {
     buffer.pop()
   }
-}
-
-const setBackground = () => {
-  screen.position(0, process.stdout.rows)
-  screen.background(config.bg)
-  screen.foreground(config.fg)
-}
-
-const setPrompt = () => {
-  setBackground()
-  screen.background(config.prompt.bg)
-  screen.foreground(config.prompt.fg)
-  screen.write(' '.repeat(process.stdout.columns))
-  screen.position(0, process.stdout.rows)
 }
 
 const exit = () => {
@@ -124,6 +111,23 @@ const rl = readline.createInterface({
   completer
 })
 
+const setBackground = () => {
+  screen.position(0, process.stdout.rows)
+  screen.background(config.bg)
+  screen.foreground(config.fg)
+}
+
+const setPrompt = () => {
+  const { cols } = rl.getCursorPos()
+  setBackground()
+  screen.background(config.prompt.bg)
+  screen.foreground(config.prompt.fg)
+  screen.write(' '.repeat(process.stdout.columns))
+  screen.position(0, process.stdout.rows)
+  screen.write(rl.line)
+  screen.position(cols + 1, process.stdout.rows)
+}
+
 const paintRows = () => {
   screen.background(config.bg)
   screen.foreground(config.fg)
@@ -152,8 +156,9 @@ const paintRows = () => {
     const line = buffer[index++]
     if (!line) continue
 
-    const calcCost = s => {
-      const cost = Math.ceil(s.length / process.stdout.columns)
+    const calcCost = len => {
+      const w = process.stdout.columns
+      const cost = Math.ceil(len / w)
 
       if (cost > 1) {
         i -= cost
@@ -164,13 +169,19 @@ const paintRows = () => {
     if (line.type !== 'message') {
       screen.background(config.comment.bg)
       screen.foreground(config.comment.fg)
-      screen.write(config.prefix || '▍')
+      const prefix = config.prefix || '▍'
+      screen.write(prefix)
       screen.foreground(line.status === 'OK' ? 2 : 1)
-      screen.write(line.status ? line.status + ' ' : '')
+      const status = line.status ? line.status + ' ' : ''
+      screen.write(status)
       screen.background(config.comment.bg)
       screen.foreground(config.comment.fg)
 
-      calcCost(line.txt)
+      const lineLength =
+        line.txt.length +
+        prefix.length +
+        status.length
+      calcCost(lineLength)
 
       screen.write(String(line.txt) || '')
     } else {
@@ -183,29 +194,32 @@ const paintRows = () => {
 
       const time = new Date(line.value.timestamp * 1000).toLocaleTimeString()
       const { publicKeys, displayPath } = line.value.getAuthor(line.channel)
-      // const author = displayPath.join('/')
       const author = displayPath.pop()
-      const prefix = author || `<${line.channel}>`
+      const prefix = ' ' + (author || `<${line.channel}>`) + ' '
       let color = 4
 
       if (publicKeys.length) {
-        const key = publicKeys[publicKeys.length - 1].toString('hex')
+        const key = publicKeys[publicKeys.length - 1].toString('hex').slice(0, 6)
         color = colorKeys[key]
 
         if (!color) {
-          const index = Object.keys(colorKeys).length + publicKeys.length
-          color = colorKeys[key] = index + 1
+          color = colorKeys[key] = colorIndex++
         }
       }
 
-      calcCost(text)
+      const lineLength =
+        time.length +
+        prefix.length +
+        text.length
+
+      calcCost(lineLength)
 
       screen.foreground(config.timestamp.fg)
       screen.background(config.timestamp.bg)
       screen.write(time)
       screen.background(config.bg)
       screen.foreground(color)
-      screen.write(' ' + prefix + ' ')
+      screen.write(prefix)
       screen.foreground(config.fg)
       screen.write(text)
     }
@@ -382,9 +396,8 @@ module.exports = (events) => {
 
   rl.on('line', (line) => {
     const text = line.trim()
-    const isCommand = text[0] === '/' || text[0] === ':'
 
-    if (isCommand) {
+    if (text[0] === '/') {
       const parts = text.slice(1).split(' ')
 
       switch (parts[0]) {
@@ -454,7 +467,7 @@ module.exports = (events) => {
       return
     }
 
-    if (!text) {
+    if (!text.trim()) {
       ready()
       return
     }
