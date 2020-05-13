@@ -1,11 +1,10 @@
-const sodium = require('sodium-universal')
+const sodium = require('sodium-native')
 const bs58 = require('bs58')
 const Swarm = require('@peerlinks/swarm')
 
 const {
   Protocol,
   Channel,
-  Chain,
   Identity,
   Message
 } = require('@peerlinks/protocol')
