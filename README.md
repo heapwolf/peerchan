@@ -19,11 +19,11 @@ npm install peerchan -g
 
 # GETTING STARTED
 
-- Launch the app
+- Launch the app by typing `peerchan` from your terminal.
 - Create an identity by typing `/id <your-user-name>`.
 - Make a request to join someone's channel by typing `/r` or
 create your own channel by typing `/create <channel-name>`.
-```
+
 
 # CONFIG
 Optional example config stored in `~/.peerchan.json`.
