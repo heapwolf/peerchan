@@ -130,6 +130,9 @@ module.exports = class Network {
     const invite = decrypt(encryptedInvite)
 
     await this.protocol.channelFromInvite(invite, this.identity)
+
+    await this.protocol.addChannel(channel)
+    await this.protocol.addIdentity(identity)
     await this.ch({ name })
   }
 
