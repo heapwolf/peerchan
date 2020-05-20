@@ -214,7 +214,7 @@ module.exports = class Network {
   }
 
   async identities () {
-    const ids = await this.protocol.getIdentityNames().map(id => String(id))
+    const ids = this.protocol.getIdentityNames().map(id => String(id))
     this.events.emit('network:identities', ids)
   }
 
